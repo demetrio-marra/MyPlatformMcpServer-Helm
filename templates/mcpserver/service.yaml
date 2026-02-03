@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcpserver
+spec:
+  ports:
+   - port: 3001           # External port (e.g., what clients connect to)
+     targetPort: 8080   # Matches the containerPort in the Deployment
+     protocol: TCP
+     name: mcp-server
+  selector:
+    app: mcpserver

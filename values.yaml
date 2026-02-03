@@ -1,0 +1,5 @@
+# values.yaml
+environment: 'Development'
+
+mcpserver:
+  imagePullSecret: gitlab-registry-secret

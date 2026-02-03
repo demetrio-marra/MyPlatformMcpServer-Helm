@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcpserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcpserver
+  template:
+    metadata:
+      labels:
+        app: mcpserver
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.mcpserver.imagePullSecret }}
+      containers:
+        - name: mcpserver
+          image: 'registry.gitlab.com/demetrio-marra/myplatformmcpserver-ci/docker-image:{{ .Values.mcpserver.tag }}'
+          volumeMounts:
+            - name: dem-root-ca-volume
+              mountPath: /etc/ssl/certs/dem-root-ca.crt # Mounts the file `dem-root-ca.crt` from the configmap to this path
+              subPath: ca.crt # This ensures it mounts as a single file, not a directory
+              readOnly: true
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: '{{ .Values.environment }}'
+
+          ports:
+            - name: mcp-server
+              containerPort: 8080
+              protocol: TCP
+      volumes:
+        - name: dem-root-ca-volume
+          configMap:
+            name: dem-root-ca # Name of the ConfigMap we created
